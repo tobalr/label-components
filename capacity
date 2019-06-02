@@ -1,0 +1,29 @@
+#!/bin/bash
+set -o errexit -o pipefail -o noclobber
+
+
+echofmt() {
+ echo -n $(numfmt --grouping $1)
+}
+
+C=$1
+LEN=$[$(echo $1 | wc -c) - 1]  
+
+
+if [[ $LEN<=2 ]]
+then 
+    echo "$C, ${C}pF"
+elif [[ $LEN==3 ]]
+then 
+    VAL=$(echo $1 | cut -c -2)
+    MULTIPLIER=$(echo $1 | cut -c 3-)
+    RAWPF=$(echo "$[$VAL * 10 ** $MULTIPLIER]pF")
+    PF=$(units -t -n --compact -d6 $RAWPF  pF)
+    NF=$(units -t -n --compact -d6 $RAWPF  nF)
+    UF=$(units -t -n --compact -d6 $RAWPF  µF)
+    MF=$(units -t -n --compact -d6 $RAWPF  mF)
+    echo $C, ${PF}pF
+    echo $C, ${NF}nF
+    echo $C, ${UF}µF
+    echo $C, ${MF}mF
+fi
